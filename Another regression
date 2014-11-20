@@ -1,0 +1,42 @@
+library(MASS)
+names(Boston)
+?Boston
+plot(crim~black,Boston)
+fit1=lm(crim~black,data=Boston)
+fit1
+summary(fit1)
+abline(fit1,col="red")
+names(fit1)
+confint(fit1)
+predict(fit1,data.frame(black=c(100,200,300)),interval="confidence")
+fit2=lm(crim~black+medv,data=Boston)
+fit2
+summary(fit2)
+fit3=lm(crim~.,Boston)
+fit3
+summary(fit3)
+par(mfrow=c(2,2))
+plot(fit3)
+fit4=update(fit3,~.-age-indus-chas-rm-age-tax-ptratio)
+fit4
+summary(fit4)
+###Non linear Interaction
+fit5=lm(crim~black*medv,Boston)
+fit5
+summary(fit5)
+### Since the interaction term is not quite significant I swich to the dis parameter
+fit5=lm(crim~black*dis,Boston)
+fit5
+summary(fit5)
+fit6=lm(crim~black+I(black^2),Boston);fit6;summary(fit6)
+### In here the black parameter is not quite significant, and in previous model, the dis factor is very siginicant,
+### I swiched to the dis parameter.
+fit6=lm(crim~dis+I(dis^2),Boston);fit6;summary(fit6)
+### The result is satisfying
+attach(Boston)
+par(mfrow=c(1,1))
+plot(crim~dis)
+points(dis,fitted(fit6),col="red",pch=20)
+fit7=lm(crim~poly(dis,4))
+points(lstat,fitted(fit7),col="blue",pch=20)
+### Turns out to be overfitting
