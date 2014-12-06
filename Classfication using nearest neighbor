@@ -1,0 +1,8 @@
+require(class)
+?knn
+xlag=cbind(Smarket$Lag1,Smarket$Lag2)
+train=Smarket$Year<2005
+knn.pred=knn(xlag[train,],xlag[!train,],Smarket$Direction[train],k=2)
+###note that in k>1 cases, the predtiction vary through time, however, in general it does better than k=1
+table(knn.pred,Smarket$Direction[!train])
+mean(knn.pred==Smarket$Direction[!train])
