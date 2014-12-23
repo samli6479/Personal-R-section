@@ -83,3 +83,37 @@ for (k in 1:10){
 }
 rmse.cv=sqrt(apply(cv.errors,2,mean))
 plot(rmse.cv,pch=19,type="b")
+```{r}
+require(glmnet)
+x=model.matrix(Salary~.-1,data=Hitters)
+y=Hitters$Salary
+```
+Fit a Rige Regression model
+```{r}
+fit.ridge=glmnet(x,y,alpha=0)
+plot(fit.ridge,xvar="lambda",label=TRUE)
+plot(fit.ridge,xvar="dev",label=TRUE)
+cv.ridge=cv.glmnet(x,y,alpha=0)
+plot(cv.ridge)
+```
+Lasso model
+```{r}
+fit.lasso=glmnet(x,y)
+plot(fit.lasso,xvar="lambda",label=TRUE)
+plot(fit.lasso,xvar="dev",label=TRUE)
+cv.lasso=cv.glmnet(x,y)
+plot(cv.lasso)
+coef(cv.lasso)
+```
+Use train/validation to select lambda
+```{r}
+lasso.tr=glmnet(x[train,],y[train])
+lasso.tr
+pred=predict(lasso.tr,x[-train,])
+dim(pred)
+rmse=sqrt(apply((y[-train]-pred)^2,2,mean))
+plot(log(lasso.tr$lambda),rmse,type="b",xlab="Log(Lambda)")
+Lambda.best=lasso.tr$lambda[order(rmse)[1]]
+Lambda.best
+coef(lasso.tr,s=Lambda.best)
+```
